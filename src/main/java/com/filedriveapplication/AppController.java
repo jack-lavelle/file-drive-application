@@ -1,2 +1,14 @@
-package com.filedriveapplication;public class AppController {
+package com.filedriveapplication;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class AppController {
+
+    @GetMapping("/")
+    public String viewHomePage(){
+
+        return "home";
+    }
 }

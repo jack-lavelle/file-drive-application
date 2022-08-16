@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class FiledriveapplicationApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(FiledriveapplicationApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(FiledriveapplicationApplication.class, args);
+    }
 
 }
