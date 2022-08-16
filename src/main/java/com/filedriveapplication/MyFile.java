@@ -1,31 +1,33 @@
 package com.filedriveapplication;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.math.BigInteger;
 
 @Entity
 @Table(name = "files")
-public class File {
+public class MyFile {
 
     //Each file has a name, a size, day of upload, its content, and then the Id as required by JPA.
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false, unique = true)
     private String fileName;
     private long size;
     @Column(name = "upload_Date")
-    private Date uploadDate;
+    private long uploadDate;
 
+    @Lob
     private byte[] content;
 
     //Constructors (protected for JPA and public for database).
-    public File(String fileName, long size, Date uploadDate){
+    public MyFile(String fileName, long size, long uploadDate, byte[] content){
         this.fileName = fileName;
         this.size = size;
         this.uploadDate = uploadDate;
+        this.content = content;
     }
-    protected File(){}
+    protected MyFile(){}
 
     public Long getId() {
         return id;
@@ -51,11 +53,11 @@ public class File {
         this.size = size;
     }
 
-    public Date getUploadDate() {
+    public long getUploadDate() {
         return uploadDate;
     }
 
-    public void setUploadDate(Date uploadDate) {
+    public void setUploadDate(long uploadDate) {
         this.uploadDate = uploadDate;
     }
 
