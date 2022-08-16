@@ -28,13 +28,16 @@ public class ApplicationDataJpaTests {
     @Test
     @Rollback(value = false)
     void testInsertMyFile() throws IOException {
-        String path = "C:\\Users\\School and Work\\Documents\\CentralFolder\\Employment\\txmq\\Coding Challenge Screens.pdf";
+        testInsertMyFileHelper("C:\\Users\\School and Work\\Documents\\CentralFolder\\Employment\\txmq\\Coding Challenge Screens.pdf");
+        testInsertMyFileHelper("C:\\Users\\School and Work\\Documents\\CentralFolder\\Employment\\txmq\\Instructions.pdf");
+        testInsertMyFileHelper("C:\\Users\\School and Work\\Documents\\CentralFolder\\Employment\\txmq\\log-old.docx");
+    }
+
+    void testInsertMyFileHelper(String path) throws IOException {
         File file = new File(path);
         MyFile myFile = new MyFile(file.getName(), file.length(), Date.valueOf(LocalDate.now(ZoneId.of("America/Montreal"))), Files.readAllBytes(file.toPath()));
-
         MyFile savedFile = repo.save(myFile);
         MyFile localFile = entityManager.find(MyFile.class, savedFile.getId());
-
         Assertions.assertEquals(savedFile.getSize(), localFile.getSize());
     }
 }
