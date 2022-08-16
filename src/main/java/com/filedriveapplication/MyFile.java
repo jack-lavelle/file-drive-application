@@ -2,6 +2,7 @@ package com.filedriveapplication;
 
 import javax.persistence.*;
 import java.math.BigInteger;
+import java.sql.Date;
 
 @Entity
 @Table(name = "files")
@@ -15,13 +16,13 @@ public class MyFile {
     private String fileName;
     private long size;
     @Column(name = "upload_Date")
-    private long uploadDate;
+    private Date uploadDate;
 
     @Lob
     private byte[] content;
 
     //Constructors (protected for JPA and public for database).
-    public MyFile(String fileName, long size, long uploadDate, byte[] content){
+    public MyFile(String fileName, long size, Date uploadDate, byte[] content){
         this.fileName = fileName;
         this.size = size;
         this.uploadDate = uploadDate;
@@ -53,11 +54,11 @@ public class MyFile {
         this.size = size;
     }
 
-    public long getUploadDate() {
+    public Date getUploadDate() {
         return uploadDate;
     }
 
-    public void setUploadDate(long uploadDate) {
+    public void setUploadDate(Date uploadDate) {
         this.uploadDate = uploadDate;
     }
 

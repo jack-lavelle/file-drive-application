@@ -12,6 +12,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.Date;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -28,7 +30,7 @@ public class ApplicationDataJpaTests {
     void testInsertMyFile() throws IOException {
         String path = "C:\\Users\\School and Work\\Documents\\CentralFolder\\Employment\\txmq\\Coding Challenge Screens.pdf";
         File file = new File(path);
-        MyFile myFile = new MyFile(file.getName(), file.length(), file.lastModified(), Files.readAllBytes(file.toPath()));
+        MyFile myFile = new MyFile(file.getName(), file.length(), Date.valueOf(LocalDate.now(ZoneId.of("America/Montreal"))), Files.readAllBytes(file.toPath()));
 
         MyFile savedFile = repo.save(myFile);
         MyFile localFile = entityManager.find(MyFile.class, savedFile.getId());
