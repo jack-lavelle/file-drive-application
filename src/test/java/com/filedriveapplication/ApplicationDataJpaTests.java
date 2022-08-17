@@ -20,7 +20,10 @@ import java.time.ZoneId;
 public class ApplicationDataJpaTests {
 
     @Autowired
-    private FileRepository repo;
+    private FileRepository fileRepo;
+
+    @Autowired
+    private UserRepository userRepo;
 
     @Autowired
     private TestEntityManager entityManager;
@@ -28,17 +31,33 @@ public class ApplicationDataJpaTests {
     @Test
     @Rollback(value = false)
     void testInsertMyFile() throws IOException {
-        User user1 = new User("Jack", "Lavelle", "jacklavelle17@gmail.com");
-        testInsertMyFileHelper("C:\\Users\\School and Work\\Documents\\CentralFolder\\Employment\\txmq\\Coding Challenge Screens.pdf", user1);
-        testInsertMyFileHelper("C:\\Users\\School and Work\\Documents\\CentralFolder\\Employment\\txmq\\Instructions.pdf", user1);
-        testInsertMyFileHelper("C:\\Users\\School and Work\\Documents\\CentralFolder\\Employment\\txmq\\log-old.docx", user1);
+        User user1 = testInsertUserHelper("Jack", "Lavelle", "jacklavelle17@gmail.com");
+        User user2 = testInsertUserHelper("sop", "doo", "sopdop@flop.com");
+        User user3 = testInsertUserHelper("steve", "beve", "beve@gmail.com");
+
+        MyFile file1 = testInsertMyFileHelper("C:\\Users\\School and Work\\Documents\\CentralFolder\\Employment\\txmq\\Coding Challenge Screens.pdf", user1);
+        user1.shareFile(user2, file1);
+        user1.shareFile(user3, file1);
+        user1.shareFile("jacklavelle12@gmail.com", file1);
+        //testInsertMyFileHelper("C:\\Users\\School and Work\\Documents\\CentralFolder\\Employment\\txmq\\Instructions.pdf", user1);
+        //testInsertMyFileHelper("C:\\Users\\School and Work\\Documents\\CentralFolder\\Employment\\txmq\\log-old.docx", user1);
     }
 
-    void testInsertMyFileHelper(String path, User owner) throws IOException {
+    MyFile testInsertMyFileHelper(String path, User owner) throws IOException {
         File file = new File(path);
         MyFile myFile = new MyFile(file.getName(), file.length(), Date.valueOf(LocalDate.now(ZoneId.of("America/Montreal"))), owner, Files.readAllBytes(file.toPath()));
-        MyFile savedFile = repo.save(myFile);
+        MyFile savedFile = fileRepo.save(myFile);
         MyFile localFile = entityManager.find(MyFile.class, savedFile.getId());
         Assertions.assertEquals(savedFile.getSize(), localFile.getSize());
+
+        return myFile;
+    }
+    User testInsertUserHelper(String first, String last, String email) throws IOException {
+        User user1 = new User(first, last, email);
+        User savedUser = userRepo.save(user1);
+        User existUser = entityManager.find(User.class, savedUser.getId());
+        Assertions.assertEquals(savedUser.getEmail(), existUser.getEmail());
+
+        return user1;
     }
 }

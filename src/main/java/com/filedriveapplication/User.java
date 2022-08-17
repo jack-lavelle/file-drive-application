@@ -11,23 +11,37 @@ public class User {
     //Each user will have full name and email, and the id is required by JPA.
     @Id
     @Column(name = "user_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String firstName;
     private String lastName;
     private String email;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
-    private Set<MyFile> userFiles = new HashSet<>();
+    private Set<MyFile> ownedFiles;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "file_id")
-    private MyFile files;
+    @ManyToMany(mappedBy = "sharedUsers", cascade = CascadeType.ALL)
+    private Set<MyFile> filesSharedWithUsers = new HashSet<>();
+
+    public void shareFile(User receiver, MyFile file){
+        receiver.getOwnedFiles().add(file);
+        receiver.filesSharedWithUsers.add(file);
+        file.sharedUsers.add(receiver);
+    }
+
+    public void shareFile(String email, MyFile file){
+        User receiver = new User("firstname", "lastname", email);
+        receiver.getOwnedFiles().add(file);
+        receiver.filesSharedWithUsers.add(file);
+        file.sharedUsers.add(receiver);
+    }
+
     //Constructor for user instances to be saved to the database.
     public User(String firstName, String lastName, String email){
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+        this.ownedFiles = new HashSet<>();
     }
     //A no arg constructor is required by JPA and is protected since you do not use it directly.
     protected User(){}
@@ -60,20 +74,12 @@ public class User {
         return email;
     }
 
-    public Set<MyFile> getUserFiles() {
-        return userFiles;
+    public Set<MyFile> getOwnedFiles() {
+        return ownedFiles;
     }
 
-    public void setUserFiles(Set<MyFile> userFiles) {
-        this.userFiles = userFiles;
-    }
-
-    public MyFile getFiles() {
-        return files;
-    }
-
-    public void setFiles(MyFile files) {
-        this.files = files;
+    public void setOwnedFiles(Set<MyFile> userFiles) {
+        this.ownedFiles = userFiles;
     }
 
     public void setEmail(String email) {

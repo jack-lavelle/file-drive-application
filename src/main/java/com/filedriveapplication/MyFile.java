@@ -24,8 +24,13 @@ public class MyFile {
     @JoinColumn(name = "user_id")
     private User owner;
 
-    @OneToMany(mappedBy = "files", cascade = CascadeType.ALL) //One file to many shared users
-    private Set<User> sharedUsers = new HashSet<>();
+    @ManyToMany(cascade = CascadeType.ALL) //One file to many shared users
+    @JoinTable(
+            name = "MyFile_User",
+            joinColumns = {@JoinColumn(name = "file_id")},
+            inverseJoinColumns = {@JoinColumn(name = "shared_user_id")}
+    )
+    Set<User> sharedUsers = new HashSet<>();
 
     @Lob
     private byte[] content;
@@ -36,7 +41,7 @@ public class MyFile {
         this.size = size;
         this.uploadDate = uploadDate;
         this.owner = owner;
-        this.sharedUsers = sharedUsers;
+        this.sharedUsers = new HashSet<>();
         this.content = content;
     }
     protected MyFile(){}
