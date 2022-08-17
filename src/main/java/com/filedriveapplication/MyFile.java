@@ -1,8 +1,9 @@
 package com.filedriveapplication;
 
 import javax.persistence.*;
-import java.math.BigInteger;
 import java.sql.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "files")
@@ -10,6 +11,7 @@ public class MyFile {
 
     //Each file has a name, a size, day of upload, its content, and then the Id as required by JPA.
     @Id
+    @Column(name = "file_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false, unique = true)
@@ -18,17 +20,42 @@ public class MyFile {
     @Column(name = "upload_Date")
     private Date uploadDate;
 
+    @ManyToOne(cascade = CascadeType.ALL) //Many files to one owner.
+    @JoinColumn(name = "user_id")
+    private User owner;
+
+    @OneToMany(mappedBy = "files", cascade = CascadeType.ALL) //One file to many shared users
+    private Set<User> sharedUsers = new HashSet<>();
+
     @Lob
     private byte[] content;
 
     //Constructors (protected for JPA and public for database).
-    public MyFile(String fileName, long size, Date uploadDate, byte[] content){
+    public MyFile(String fileName, long size, Date uploadDate, User owner, byte[] content){
         this.fileName = fileName;
         this.size = size;
         this.uploadDate = uploadDate;
+        this.owner = owner;
+        this.sharedUsers = sharedUsers;
         this.content = content;
     }
     protected MyFile(){}
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
+
+    public Set<User> getSharedUsers() {
+        return sharedUsers;
+    }
+
+    public void setSharedUsers(Set<User> sharedUsers) {
+        this.sharedUsers = sharedUsers;
+    }
 
     public Long getId() {
         return id;

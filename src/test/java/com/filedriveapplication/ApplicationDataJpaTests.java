@@ -28,14 +28,15 @@ public class ApplicationDataJpaTests {
     @Test
     @Rollback(value = false)
     void testInsertMyFile() throws IOException {
-        testInsertMyFileHelper("C:\\Users\\School and Work\\Documents\\CentralFolder\\Employment\\txmq\\Coding Challenge Screens.pdf");
-        testInsertMyFileHelper("C:\\Users\\School and Work\\Documents\\CentralFolder\\Employment\\txmq\\Instructions.pdf");
-        testInsertMyFileHelper("C:\\Users\\School and Work\\Documents\\CentralFolder\\Employment\\txmq\\log-old.docx");
+        User user1 = new User("Jack", "Lavelle", "jacklavelle17@gmail.com");
+        testInsertMyFileHelper("C:\\Users\\School and Work\\Documents\\CentralFolder\\Employment\\txmq\\Coding Challenge Screens.pdf", user1);
+        testInsertMyFileHelper("C:\\Users\\School and Work\\Documents\\CentralFolder\\Employment\\txmq\\Instructions.pdf", user1);
+        testInsertMyFileHelper("C:\\Users\\School and Work\\Documents\\CentralFolder\\Employment\\txmq\\log-old.docx", user1);
     }
 
-    void testInsertMyFileHelper(String path) throws IOException {
+    void testInsertMyFileHelper(String path, User owner) throws IOException {
         File file = new File(path);
-        MyFile myFile = new MyFile(file.getName(), file.length(), Date.valueOf(LocalDate.now(ZoneId.of("America/Montreal"))), Files.readAllBytes(file.toPath()));
+        MyFile myFile = new MyFile(file.getName(), file.length(), Date.valueOf(LocalDate.now(ZoneId.of("America/Montreal"))), owner, Files.readAllBytes(file.toPath()));
         MyFile savedFile = repo.save(myFile);
         MyFile localFile = entityManager.find(MyFile.class, savedFile.getId());
         Assertions.assertEquals(savedFile.getSize(), localFile.getSize());
