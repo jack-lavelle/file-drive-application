@@ -30,9 +30,14 @@ public class ApplicationDataJpaTests {
 
     @Test
     @Rollback(value = false)
-    void testInsertMyFile() throws IOException {
+    void testDriver() throws IOException {
+
     }
 
+    void testFindByEmailHelper(String email){
+        User user = userRepo.findByEmail(email);
+        Assertions.assertNotNull(user);
+    }
     MyFile testInsertMyFileHelper(String path, User owner) throws IOException {
         File file = new File(path);
         MyFile myFile = new MyFile(file.getName(), file.length(), Date.valueOf(LocalDate.now(ZoneId.of("America/Montreal"))), owner, Files.readAllBytes(file.toPath()));
