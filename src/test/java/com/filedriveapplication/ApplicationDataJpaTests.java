@@ -31,16 +31,6 @@ public class ApplicationDataJpaTests {
     @Test
     @Rollback(value = false)
     void testInsertMyFile() throws IOException {
-        User user1 = testInsertUserHelper("Jack", "Lavelle", "jacklavelle17@gmail.com");
-        User user2 = testInsertUserHelper("sop", "doo", "sopdop@flop.com");
-        User user3 = testInsertUserHelper("steve", "beve", "beve@gmail.com");
-
-        MyFile file1 = testInsertMyFileHelper("C:\\Users\\School and Work\\Documents\\CentralFolder\\Employment\\txmq\\Coding Challenge Screens.pdf", user1);
-        user1.shareFile(user2, file1);
-        user1.shareFile(user3, file1);
-        user1.shareFile("jacklavelle12@gmail.com", file1);
-        //testInsertMyFileHelper("C:\\Users\\School and Work\\Documents\\CentralFolder\\Employment\\txmq\\Instructions.pdf", user1);
-        //testInsertMyFileHelper("C:\\Users\\School and Work\\Documents\\CentralFolder\\Employment\\txmq\\log-old.docx", user1);
     }
 
     MyFile testInsertMyFileHelper(String path, User owner) throws IOException {
