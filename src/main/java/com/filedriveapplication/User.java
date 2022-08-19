@@ -1,7 +1,5 @@
 package com.filedriveapplication;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -20,9 +18,8 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    private String firstName;
-    @Column(nullable = false)
-    private String lastName;
+    private String name;
+
     @Column(nullable = false, unique = true)
     private String email;
 
@@ -39,16 +36,15 @@ public class User {
     }
 
     public void shareFile(String email, MyFile file){
-        User receiver = new User("firstname", "lastname", email);
+        User receiver = new User("firstname", email);
         receiver.getOwnedFiles().add(file);
         receiver.filesSharedWithUsers.add(file);
         file.sharedUsers.add(receiver);
     }
 
     //Constructor for user instances to be saved to the database.
-    public User(String firstName, String lastName, String email){
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public User(String name, String email){
+        this.name = name;
         this.email = email;
         this.ownedFiles = new HashSet<>();
     }
@@ -63,20 +59,12 @@ public class User {
         this.id = id;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getName() {
+        return name;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setName(String firstName) {
+        this.name = firstName;
     }
 
     public String getEmail() {

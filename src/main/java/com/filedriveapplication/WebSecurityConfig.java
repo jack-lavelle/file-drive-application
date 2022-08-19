@@ -40,14 +40,15 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                //.antMatchers("/login").permitAll()
-                .anyRequest().permitAll()
-                .and()
+        http
+                .authorizeRequests()
+                    .antMatchers("/resources/**").permitAll().anyRequest().permitAll()
+                    .and()
                 .formLogin()
-                    .usernameParameter("email")
-                    .defaultSuccessUrl("/upload")
+                    .loginPage("/front_page")
                     .permitAll()
+                    .usernameParameter("email")
+                    .defaultSuccessUrl("/home_page")
                 .and()
                 .logout().logoutSuccessUrl("/front_page").permitAll();
 

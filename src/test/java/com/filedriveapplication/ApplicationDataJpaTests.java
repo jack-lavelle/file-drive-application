@@ -48,7 +48,7 @@ public class ApplicationDataJpaTests {
         return myFile;
     }
     User testInsertUserHelper(String first, String last, String email) throws IOException {
-        User user1 = new User(first, last, email);
+        User user1 = new User(first, email);
         User savedUser = userRepo.save(user1);
         User existUser = entityManager.find(User.class, savedUser.getId());
         Assertions.assertEquals(savedUser.getEmail(), existUser.getEmail());

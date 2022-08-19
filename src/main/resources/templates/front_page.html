@@ -2,18 +2,27 @@
 <html lang="en" xmlns:th="http://thymleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Page</title>
+    <title>Sign In</title>
     <link rel="stylesheet" type="text/css" href="webjars/bootstrap/css/bootstrap.min.css"/>
 </head>
 
 <body>
     <div class="container-fluid text-center">
         <div>
-            <h1>Page</h1>
+            <h1>Sign In</h1>
         </div>
         <div>
-            <h3><a th:href="@{/register}">Register</a></h3>
-            <h3><a th:href="@{/login}">Login</a></h3>
+            <h3><a th:href="@{/register}">Sign Up</a></h3>
+            <h1>Login</h1>
+            <form th:action="@{/front_page}" method="post">
+                <div>
+                    <input type="text" name="email" placeholder="Email"/>
+                </div>
+                <div>
+                    <input type="password" name="password" placeholder="Password"/>
+                </div>
+                <input type="submit" value="Log in" />
+            </form>
         </div>
     </div>
 

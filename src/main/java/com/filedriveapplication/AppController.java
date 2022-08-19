@@ -12,11 +12,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.Servlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Objects;
+import java.util.Set;
 
 @Controller
 public class AppController {
@@ -27,7 +31,7 @@ public class AppController {
     @Autowired
     private UserRepository userRepo;
 
-    @GetMapping("")
+    @GetMapping("/")
     public String viewPage(){
         return "front_page";
     }
@@ -39,10 +43,12 @@ public class AppController {
         return "register";
     }
     //Home page mapping.
-    @GetMapping("/home")
-    public String viewHomePage(){
-
-        return "upload";
+    @GetMapping("/home_page")
+    public String viewHomePage(Model model){
+        User user = userRepo.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        Set<MyFile> ownedFiles = user.getOwnedFiles();
+        model.addAttribute("ownedFiles", ownedFiles);
+        return "home_page";
     }
     @GetMapping("/upload")
     public String viewUploadPage(){
@@ -61,9 +67,7 @@ public class AppController {
 
     @PostMapping("/upload")
     public String uploadFile(@RequestParam("document") MultipartFile multipartFile, RedirectAttributes ra) throws IOException {
-        AuthenticatedUserDetails authUser= (AuthenticatedUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepo.findByEmail(authUser.getUsername());
-        System.out.println(user.getEmail());
+        User user = userRepo.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         MyFile file = new MyFile(StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename())), multipartFile.getSize(), Date.valueOf(LocalDate.now(ZoneId.of("America/Montreal"))), user, multipartFile.getBytes());
         repo.save(file);
 

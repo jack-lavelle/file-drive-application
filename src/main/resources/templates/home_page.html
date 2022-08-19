@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home Page</title>
+    <link rel="stylesheet" type="text/css" href="webjars/bootstrap/css/bootstrap.min.css"/>
+</head>
+<body>
+    <div class="container-fluid text-center">
+        <div>
+            <h1>Home Page</h1>
+        </div>
+
+        <div>
+            <th:block th:each="myFile : ${ownedFiles}">
+                <div>
+                    [[${myFile.fileName}]]
+                </div>
+            </th:block>
+
+        </div>
+        <div>
+            <a th:href="@{/upload}"> UPLOAD </a>
+            <a th:href="@{/}"> LOGOUT </a>
+        </div>
+
+    </div>
+
+</body>
+</html>
