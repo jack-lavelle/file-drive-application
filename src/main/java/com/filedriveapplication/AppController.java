@@ -1,7 +1,10 @@
 package com.filedriveapplication;
 
 import org.hibernate.Session;
+import org.hibernate.type.LongType;
+import org.hibernate.type.StandardBasicTypes;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -16,14 +19,20 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.servlet.Servlet;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.swing.text.html.Option;
 import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 @Controller
@@ -34,6 +43,9 @@ public class AppController {
 
     @Autowired
     private UserRepository userRepo;
+
+    @Autowired
+    private EntityManager em;
 
     @GetMapping("/")
     public String viewPage(){
@@ -59,19 +71,22 @@ public class AppController {
         return "upload";
     }
     @PostMapping("/process_share")
-    public String shareFile(Long id, String email){
-        MyFile sharedFile = repo.findByFileId(id);
+    public String shareFile(Long id, String email) throws Exception {
+        Optional<MyFile> result = repo.findByFileId(id);
+        if (!result.isPresent()){
+            throw new Exception("Could not find file with id: " + id);
+        }
+        MyFile sharedFile = result.get();
         User receiver = userRepo.findByEmail(email);
         User owner = userRepo.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
 
         owner.shareFile(receiver, sharedFile);
+        owner.getFilesSharedWithUsers().add(sharedFile);
         repo.save(sharedFile);
         userRepo.save(owner);
         userRepo.save(receiver);
 
-
-
-        return "home_page";
+        return "redirect:/home_page";
     }
 
     @PostMapping("/process_register")
@@ -93,6 +108,61 @@ public class AppController {
 
         ra.addFlashAttribute("message", "File has been successfully uploaded.");
 
-        return "redirect:/upload";
+        return "redirect:/home_page";
+    }
+
+    @GetMapping("/download")
+    public void downloadFile(@Param("id") Long id, HttpServletResponse response) throws Exception {
+        Optional<MyFile> result = repo.findByFileId(id);
+        if (!result.isPresent()){
+            throw new Exception("Could not find file with id: " + id);
+        }
+        MyFile myFile = result.get();
+
+        response.setContentType("application/octet-stream");
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=" + myFile.getFileName();
+        response.setHeader(headerKey, headerValue);
+
+        ServletOutputStream outputStream = response.getOutputStream();
+        outputStream.write(myFile.getContent());
+        outputStream.close();
+    }
+    @GetMapping("/delete")
+    public String deleteFile(@Param("id") Long id) throws Exception {
+        Optional<MyFile> result = repo.findByFileId(id);
+        if (!result.isPresent()){
+            throw new Exception("Could not find file with id: " + id);
+        }
+        repo.delete(result.get());
+
+        return "redirect:/home_page";
+    }
+
+    @GetMapping("/shared_files")
+    public String viewSharedFiles(Model model){
+        User user = userRepo.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        Query mySet = em.createNativeQuery("SELECT DISTINCT *\n" +
+                "FROM files.files\n" +
+                "WHERE files.file_id in (SELECT file_id FROM my_file_user) and files.user_id =" + String.valueOf(user.getId()) +
+                ";", MyFile.class);
+
+        List<MyFile> sharedFiles = mySet.getResultList();
+        model.addAttribute("sharedFiles", sharedFiles);
+
+        return "shared_files";
+    }
+
+    @GetMapping("/share_files")
+    public String viewShareFiles(Model model){
+        User user = userRepo.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        Query mySet = em.createNativeQuery("SELECT DISTINCT *\n" +
+                "FROM files.files\n" +
+                "WHERE user_id in (SELECT user_id FROM my_file_user) and user_id !=" + user.getId() + ";", MyFile.class);
+
+        List<MyFile> shareFiles = mySet.getResultList();
+        model.addAttribute("shareFiles", shareFiles);
+
+        return "share_files";
     }
 }

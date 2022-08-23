@@ -10,6 +10,6 @@ import java.util.Optional;
 public interface FileRepository extends JpaRepository <MyFile, Long>{
 
     @Query("SELECT u FROM MyFile u WHERE u.id = ?1")
-    MyFile findByFileId(Long id);
+    Optional<MyFile> findByFileId(Long id);
 
 }

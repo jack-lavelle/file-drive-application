@@ -31,15 +31,16 @@ public class User {
         this.filesSharedWithUsers = filesSharedWithUsers;
     }
 
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "owner", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<MyFile> ownedFiles;
 
-    @ManyToMany(mappedBy = "sharedUsers")
+    @ManyToMany(mappedBy = "sharedUsers", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<MyFile> filesSharedWithUsers = new HashSet<>();
 
     public void shareFile(User receiver, MyFile file){
         receiver.getOwnedFiles().add(file);
-        receiver.filesSharedWithUsers.add(file);
+        this.getFilesSharedWithUsers().add(file);
+        System.out.println("added to shared files:" + file.getFileName());
         file.sharedUsers.add(receiver);
     }
 

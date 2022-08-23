@@ -14,16 +14,16 @@
 <body>
     <div class="container-fluid text-center">
         <div>
-            <h1>Home Page</h1>
+            <h1>Files I'm Sharing</h1>
         </div>
         <div>
-            <a th:href="@{/shared_files}">Files I'm Sharing</a>
+            <a th:href="@{/share_files}">Files Shared With Me</a>
         </div>
         <div>
-            <a th:href="@{/shared_files_with_me}">Files Shared With Me</a>
+            <a th:href="@{/home_page}">My Files</a>
         </div>
 
-        <div id = "inner" class = "border" th:each="myFile : ${ownedFiles}" style="width: 300px">
+        <div id = "inner" class = "border" th:each="myFile : ${sharedFiles}" style="width: 300px">
             <div>
                 <img src="/file.png" alt="file">
             </div>
@@ -32,18 +32,9 @@
                 <a th:href = "@{'/download?id=' + ${myFile.id}}" th:text = "${myFile.fileName}"></a>
             </div>
 
-            <form th:action="@{/process_share}" th:object = "${myFile}" method="post">
-                <input th:type = "email" th:value = "Email" th:name = "email"/>
-                <input type = "hidden" th:value ="*{id}" id="id" name="id"/>
-                <input type = "submit" value = "Share"/>
-            </form>
-
             <div>
                 <a th:href = "@{'/delete?id=' + ${myFile.id}}" th:text="Delete"></a>
             </div>
-
-
-
         </div>
 
         <div>

@@ -20,7 +20,7 @@ public class MyFile {
     @Column(name = "upload_Date")
     private Date uploadDate;
 
-    @ManyToOne(cascade = CascadeType.ALL) //Many files to one owner.
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}) //Many files to one owner.
     @JoinColumn(name = "user_id")
     private User owner;
 
