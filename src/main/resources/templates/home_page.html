@@ -1,9 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Page</title>
     <link rel="stylesheet" type="text/css" href="webjars/bootstrap/css/bootstrap.min.css"/>
+    <style>
+        #inner {
+            width: 50%;
+            margin: 0 auto;
+        }
+    </style>
 </head>
 <body>
     <div class="container-fluid text-center">
@@ -11,14 +17,20 @@
             <h1>Home Page</h1>
         </div>
 
-        <div>
-            <th:block th:each="myFile : ${ownedFiles}">
-                <div>
-                    [[${myFile.fileName}]]
-                </div>
-            </th:block>
+        <div id = "inner" class = "border" th:each="myFile : ${ownedFiles}" style="width: 300px">
+            <img src="/file.png" alt="file">
+            <a th:href = "@{'/download_file?id=' + ${id}}" th:text = "${myFile.fileName}"></a>
+
+            <form th:action="@{/process_share}" th:object = "${myFile}" method="post">
+                <input th:type = "email" th:value = "Email To Share" th:name = "email"/>
+                <input type = "hidden" th:value ="*{id}" id="id" name="id"/>
+                <input type = "submit" value = "Share"/>
+            </form>
+
+            <div ></div>
 
         </div>
+
         <div>
             <a th:href="@{/upload}"> UPLOAD </a>
             <a th:href="@{/}"> LOGOUT </a>

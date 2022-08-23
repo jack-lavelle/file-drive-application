@@ -14,7 +14,7 @@ public class MyFile {
     @Column(name = "file_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String fileName;
     private long size;
     @Column(name = "upload_Date")
@@ -24,7 +24,7 @@ public class MyFile {
     @JoinColumn(name = "user_id")
     private User owner;
 
-    @ManyToMany(cascade = CascadeType.ALL) //One file to many shared users
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}) //One file to many shared users
     @JoinTable(
             name = "MyFile_User",
             joinColumns = {@JoinColumn(name = "file_id")},

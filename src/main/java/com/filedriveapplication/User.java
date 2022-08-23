@@ -23,10 +23,18 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+    public Set<MyFile> getFilesSharedWithUsers() {
+        return filesSharedWithUsers;
+    }
+
+    public void setFilesSharedWithUsers(Set<MyFile> filesSharedWithUsers) {
+        this.filesSharedWithUsers = filesSharedWithUsers;
+    }
+
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private Set<MyFile> ownedFiles;
 
-    @ManyToMany(mappedBy = "sharedUsers", cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "sharedUsers")
     private Set<MyFile> filesSharedWithUsers = new HashSet<>();
 
     public void shareFile(User receiver, MyFile file){
@@ -36,14 +44,15 @@ public class User {
     }
 
     public void shareFile(String email, MyFile file){
-        User receiver = new User("firstname", email);
+        User receiver = new User("firstname", email, "password");
         receiver.getOwnedFiles().add(file);
         receiver.filesSharedWithUsers.add(file);
         file.sharedUsers.add(receiver);
     }
 
     //Constructor for user instances to be saved to the database.
-    public User(String name, String email){
+    public User(String name, String email, String password){
+        this.password = password;
         this.name = name;
         this.email = email;
         this.ownedFiles = new HashSet<>();

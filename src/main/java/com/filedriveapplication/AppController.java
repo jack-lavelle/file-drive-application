@@ -1,17 +1,21 @@
 package com.filedriveapplication;
 
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Repository;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.persistence.EntityManager;
 import javax.servlet.Servlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -54,6 +58,21 @@ public class AppController {
     public String viewUploadPage(){
         return "upload";
     }
+    @PostMapping("/process_share")
+    public String shareFile(Long id, String email){
+        MyFile sharedFile = repo.findByFileId(id);
+        User receiver = userRepo.findByEmail(email);
+        User owner = userRepo.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+
+        owner.shareFile(receiver, sharedFile);
+        repo.save(sharedFile);
+        userRepo.save(owner);
+        userRepo.save(receiver);
+
+
+
+        return "home_page";
+    }
 
     @PostMapping("/process_register")
     public String processRegister(User user){
@@ -62,7 +81,7 @@ public class AppController {
         user.setPassword(encodedPassword);
         userRepo.save(user);
 
-        return "upload";
+        return "front_page";
     }
 
     @PostMapping("/upload")
@@ -72,7 +91,7 @@ public class AppController {
         repo.save(file);
 
 
-        ra.addFlashAttribute("message", "success");
+        ra.addFlashAttribute("message", "File has been successfully uploaded.");
 
         return "redirect:/upload";
     }

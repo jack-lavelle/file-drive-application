@@ -31,7 +31,10 @@ public class ApplicationDataJpaTests {
     @Test
     @Rollback(value = false)
     void testDriver() throws IOException {
-
+        User user1 = testInsertUserHelper("jack", "lavel", "j22@gmail.com", "apples");
+        User user2 = testInsertUserHelper("d", "l", "d22@gmaikl.com", "sapples");
+        MyFile myFile = testInsertMyFileHelper("C:\\Users\\School and Work\\Documents\\CentralFolder\\Employment\\txmq\\Instructions.pdf", user1);
+        user1.shareFile(user2, myFile);
     }
 
     void testFindByEmailHelper(String email){
@@ -47,8 +50,8 @@ public class ApplicationDataJpaTests {
 
         return myFile;
     }
-    User testInsertUserHelper(String first, String last, String email) throws IOException {
-        User user1 = new User(first, email);
+    User testInsertUserHelper(String first, String last, String email, String password) throws IOException {
+        User user1 = new User(first, email, password);
         User savedUser = userRepo.save(user1);
         User existUser = entityManager.find(User.class, savedUser.getId());
         Assertions.assertEquals(savedUser.getEmail(), existUser.getEmail());
