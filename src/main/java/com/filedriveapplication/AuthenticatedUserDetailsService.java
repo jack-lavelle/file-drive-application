@@ -5,13 +5,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import java.util.Optional;
+
 public class AuthenticatedUserDetailsService implements UserDetailsService {
 
     @Autowired
     private UserRepository repo;
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = repo.findByEmail(email);
+        Optional<User> resultUser = repo.findByEmail(email);
+        User user = resultUser.get();
         if (user == null){
             throw new UsernameNotFoundException("There exists no user with that email.");
         }

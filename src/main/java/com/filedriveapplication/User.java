@@ -44,11 +44,12 @@ public class User {
         file.sharedUsers.add(receiver);
     }
 
-    public void shareFile(String email, MyFile file){
+    public User shareFile(String email, MyFile file){
         User receiver = new User("firstname", email, "password");
         receiver.getOwnedFiles().add(file);
         receiver.filesSharedWithUsers.add(file);
         file.sharedUsers.add(receiver);
+        return receiver;
     }
 
     //Constructor for user instances to be saved to the database.

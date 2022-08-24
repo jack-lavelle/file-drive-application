@@ -60,8 +60,12 @@ public class AppController {
     }
     //Home page mapping.
     @GetMapping("/home_page")
-    public String viewHomePage(Model model){
-        User user = userRepo.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+    public String viewHomePage(Model model) throws Exception {
+        Optional<User> result = userRepo.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        if (!result.isPresent()){
+            throw new Exception("User does not exist.");
+        }
+        User user = result.get();
         Set<MyFile> ownedFiles = user.getOwnedFiles();
         model.addAttribute("ownedFiles", ownedFiles);
         return "home_page";
@@ -77,15 +81,27 @@ public class AppController {
             throw new Exception("Could not find file with id: " + id);
         }
         MyFile sharedFile = result.get();
-        User receiver = userRepo.findByEmail(email);
-        User owner = userRepo.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        Optional<User> resultReceiver = userRepo.findByEmail(email);
+        Optional<User> resultOwner = userRepo.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
 
-        owner.shareFile(receiver, sharedFile);
+        if (!resultOwner.isPresent()){
+            throw new Exception("Something went wrong: you are probably logged out ... please log back in.");
+        }
+        User owner = resultOwner.get();
+
+        User receiver;
+        if (!resultReceiver.isPresent()){
+            receiver = owner.shareFile(email, sharedFile);
+            userRepo.save(receiver);
+            System.out.println("here");
+        } else {
+            receiver = resultReceiver.get();
+            owner.shareFile(receiver, sharedFile);
+        }
         owner.getFilesSharedWithUsers().add(sharedFile);
         repo.save(sharedFile);
         userRepo.save(owner);
         userRepo.save(receiver);
-
         return "redirect:/home_page";
     }
 
@@ -100,8 +116,12 @@ public class AppController {
     }
 
     @PostMapping("/upload")
-    public String uploadFile(@RequestParam("document") MultipartFile multipartFile, RedirectAttributes ra) throws IOException {
-        User user = userRepo.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+    public String uploadFile(@RequestParam("document") MultipartFile multipartFile, RedirectAttributes ra) throws Exception {
+        Optional<User> resultUser = userRepo.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        if (!resultUser.isPresent()){
+            throw new Exception("Something went wrong: you are probably logged out ... please log back in.");
+        }
+        User user = resultUser.get();
         MyFile file = new MyFile(StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename())), multipartFile.getSize(), Date.valueOf(LocalDate.now(ZoneId.of("America/Montreal"))), user, multipartFile.getBytes());
         repo.save(file);
 
@@ -140,8 +160,12 @@ public class AppController {
     }
 
     @GetMapping("/shared_files")
-    public String viewSharedFiles(Model model){
-        User user = userRepo.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+    public String viewSharedFiles(Model model) throws Exception {
+        Optional<User> resultUser = userRepo.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        if (!resultUser.isPresent()){
+            throw new Exception("Something went wrong: you are probably logged out ... please log back in.");
+        }
+        User user = resultUser.get();
         Query mySet = em.createNativeQuery("SELECT DISTINCT *\n" +
                 "FROM files.files\n" +
                 "WHERE files.file_id in (SELECT file_id FROM my_file_user) and files.user_id =" + String.valueOf(user.getId()) +
@@ -154,8 +178,12 @@ public class AppController {
     }
 
     @GetMapping("/share_files")
-    public String viewShareFiles(Model model){
-        User user = userRepo.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+    public String viewShareFiles(Model model) throws Exception {
+        Optional<User> resultUser = userRepo.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        if (!resultUser.isPresent()){
+            throw new Exception("Something went wrong: you are probably logged out ... please log back in.");
+        }
+        User user = resultUser.get();
         Query mySet = em.createNativeQuery("SELECT DISTINCT *\n" +
                 "FROM files.files\n" +
                 "WHERE user_id in (SELECT user_id FROM my_file_user) and user_id !=" + user.getId() + ";", MyFile.class);
