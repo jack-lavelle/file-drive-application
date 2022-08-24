@@ -27,14 +27,13 @@
             <div>
                 <img src="/file.png" alt="file">
             </div>
-
             <div>
-                <a th:href = "@{'/download?id=' + ${myFile.id}}" th:text = "${myFile.fileName}"></a>
+                <a th:text = "${myFile.fileName}"></a>
             </div>
 
-            <div>
-                <a th:href = "@{'/delete?id=' + ${myFile.id}}" th:text="Delete"></a>
-            </div>
+
+            <a type = "submit" th:href = "@{'/download?id=' + ${myFile.id}}" th:text = "View"></a>
+            <a type = "submit" th:href = "@{'/delete?id=' + ${myFile.id}}" th:text="Delete"></a>
         </div>
 
         <div>

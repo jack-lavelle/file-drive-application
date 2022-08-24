@@ -101,8 +101,14 @@ public class AppController {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String encodedPassword = encoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
-        userRepo.save(user);
-        ra.addFlashAttribute("success", "Registered successfully.");
+        Optional<User> resultUser = userRepo.findByEmail(user.getEmail());
+        if (resultUser.isPresent()){
+            ra.addFlashAttribute("fail", "Registered failed. There is probably already another user with that email.");
+        } else {
+            userRepo.save(user);
+            ra.addFlashAttribute("success", "Registered successfully.");
+        }
+
 
         return "redirect:/";
     }
@@ -115,10 +121,14 @@ public class AppController {
         }
         User user = resultUser.get();
         MyFile file = new MyFile(StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename())), multipartFile.getSize(), Date.valueOf(LocalDate.now(ZoneId.of("America/Montreal"))), user, multipartFile.getBytes());
-        repo.save(file);
+        Optional<MyFile> resultFile = repo.findByFileName(file.getFileName());
+        if (resultFile.isPresent()){
+            ra.addFlashAttribute("fail", "Cannot have duplicates.");
+        } else {
+            repo.save(file);
+            ra.addFlashAttribute("message", "File has been successfully uploaded.");
+        }
 
-
-        ra.addFlashAttribute("message", "File has been successfully uploaded.");
 
         return "redirect:/home_page";
     }

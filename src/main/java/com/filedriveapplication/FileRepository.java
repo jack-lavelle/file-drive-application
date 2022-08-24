@@ -12,4 +12,7 @@ public interface FileRepository extends JpaRepository <MyFile, Long>{
     @Query("SELECT u FROM MyFile u WHERE u.id = ?1")
     Optional<MyFile> findByFileId(Long id);
 
+    @Query("SELECT u FROM MyFile u WHERE u.fileName = ?1")
+    Optional<MyFile> findByFileName(String fileName);
+
 }

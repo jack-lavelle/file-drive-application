@@ -9,9 +9,6 @@
 <body>
     <div class="container-fluid text-center">
         <div>
-            <h2>Sign In or Register</h2>
-        </div>
-        <div>
             <h4>Sign In</h4>
 
             <div class="text-danger">
@@ -19,6 +16,9 @@
             </div>
             <div class="text-success">
                 <p>[[${success}]]</p>
+            </div>
+            <div class="text-danger">
+                <p>[[${fail}]]</p>
             </div>
 
             <form th:action="@{/front_page}" method="post">
