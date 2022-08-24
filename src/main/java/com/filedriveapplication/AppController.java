@@ -1,18 +1,13 @@
 package com.filedriveapplication;
 
-import org.hibernate.Session;
-import org.hibernate.type.LongType;
-import org.hibernate.type.StandardBasicTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Repository;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,13 +15,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import javax.servlet.Servlet;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.swing.text.html.Option;
-import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -68,6 +58,7 @@ public class AppController {
         User user = result.get();
         Set<MyFile> ownedFiles = user.getOwnedFiles();
         model.addAttribute("ownedFiles", ownedFiles);
+        model.addAttribute("name", user.getName());
         return "home_page";
     }
     @GetMapping("/upload")
@@ -75,7 +66,7 @@ public class AppController {
         return "upload";
     }
     @PostMapping("/process_share")
-    public String shareFile(Long id, String email) throws Exception {
+    public String shareFile(Long id, String email, RedirectAttributes ra) throws Exception {
         Optional<MyFile> result = repo.findByFileId(id);
         if (!result.isPresent()){
             throw new Exception("Could not find file with id: " + id);
@@ -93,7 +84,6 @@ public class AppController {
         if (!resultReceiver.isPresent()){
             receiver = owner.shareFile(email, sharedFile);
             userRepo.save(receiver);
-            System.out.println("here");
         } else {
             receiver = resultReceiver.get();
             owner.shareFile(receiver, sharedFile);
@@ -102,17 +92,19 @@ public class AppController {
         repo.save(sharedFile);
         userRepo.save(owner);
         userRepo.save(receiver);
+        ra.addFlashAttribute("message", "File successfully shared");
         return "redirect:/home_page";
     }
 
     @PostMapping("/process_register")
-    public String processRegister(User user){
+    public String processRegister(User user, RedirectAttributes ra){
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String encodedPassword = encoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
         userRepo.save(user);
+        ra.addFlashAttribute("success", "Registered successfully.");
 
-        return "front_page";
+        return "redirect:/";
     }
 
     @PostMapping("/upload")
@@ -129,6 +121,11 @@ public class AppController {
         ra.addFlashAttribute("message", "File has been successfully uploaded.");
 
         return "redirect:/home_page";
+    }
+    @GetMapping("/login_fail")
+    public String viewLoginFail(RedirectAttributes ra){
+        ra.addFlashAttribute("message", "Login Failed: User does not exist or password was wrong. Try again.");
+        return "redirect:/";
     }
 
     @GetMapping("/download")
@@ -177,7 +174,7 @@ public class AppController {
         return "shared_files";
     }
 
-    @GetMapping("/share_files")
+    @GetMapping("/shared_files_with_me")
     public String viewShareFiles(Model model) throws Exception {
         Optional<User> resultUser = userRepo.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         if (!resultUser.isPresent()){
@@ -191,6 +188,6 @@ public class AppController {
         List<MyFile> shareFiles = mySet.getResultList();
         model.addAttribute("shareFiles", shareFiles);
 
-        return "share_files";
+        return "shared_files_with_me";
     }
 }

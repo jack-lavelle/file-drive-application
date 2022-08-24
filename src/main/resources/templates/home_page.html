@@ -14,13 +14,21 @@
 <body>
     <div class="container-fluid text-center">
         <div>
-            <h1>Home Page</h1>
+            <h2>Home Page</h2>
+        </div>
+        <div>
+            <p>Welcome [[${name}]]!</p>
         </div>
         <div>
             <a th:href="@{/shared_files}">Files I'm Sharing</a>
         </div>
+
         <div>
             <a th:href="@{/shared_files_with_me}">Files Shared With Me</a>
+        </div>
+
+        <div class="text-success">
+            <p>[[${message}]]</p>
         </div>
 
         <div id = "inner" class = "border" th:each="myFile : ${ownedFiles}" style="width: 300px">
@@ -42,13 +50,13 @@
                 <a th:href = "@{'/delete?id=' + ${myFile.id}}" th:text="Delete"></a>
             </div>
 
-
-
         </div>
 
         <div>
-            <a th:href="@{/upload}"> UPLOAD </a>
-            <a th:href="@{/}"> LOGOUT </a>
+            <form>
+                <input type="submit" value="Upload" th:formaction="@{/upload}" th:formmethod="get"/>
+                <input type="submit" value="Logout" th:formaction="@{/}" th:formmethod="get"/>
+            </form>
         </div>
 
     </div>

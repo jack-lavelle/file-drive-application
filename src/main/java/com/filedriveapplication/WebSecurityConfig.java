@@ -46,11 +46,12 @@ public class WebSecurityConfig {
                     .and()
                 .formLogin()
                     .loginPage("/front_page")
+                    .failureUrl("/login_fail")
                     .permitAll()
                     .usernameParameter("email")
                     .defaultSuccessUrl("/home_page")
                 .and()
-                .logout().logoutSuccessUrl("/front_page").permitAll();
+                .logout().logoutSuccessUrl("/").permitAll();
 
         http.headers().frameOptions().sameOrigin();
 

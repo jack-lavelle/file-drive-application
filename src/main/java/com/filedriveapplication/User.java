@@ -1,5 +1,7 @@
 package com.filedriveapplication;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -46,6 +48,9 @@ public class User {
 
     public User shareFile(String email, MyFile file){
         User receiver = new User("firstname", email, "password");
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String encodedPassword = encoder.encode(receiver.getPassword());
+        receiver.setPassword(encodedPassword);
         receiver.getOwnedFiles().add(file);
         receiver.filesSharedWithUsers.add(file);
         file.sharedUsers.add(receiver);

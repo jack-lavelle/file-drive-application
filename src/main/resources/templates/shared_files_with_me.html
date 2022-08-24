@@ -14,7 +14,7 @@
 <body>
     <div class="container-fluid text-center">
         <div>
-            <h1>Files Shared With Me</h1>
+            <h2>Files Shared With Me</h2>
         </div>
         <div>
             <a th:href="@{/shared_files}">Files I'm Sharing</a>
@@ -38,8 +38,10 @@
         </div>
 
         <div>
-            <a th:href="@{/upload}"> UPLOAD </a>
-            <a th:href="@{/}"> LOGOUT </a>
+            <form>
+                <input type="submit" value="Upload" th:formaction="@{/upload}" th:formmethod="get"/>
+                <input type="submit" value="Logout" th:formaction="@{/}" th:formmethod="get"/>
+            </form>
         </div>
 
     </div>

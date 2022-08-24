@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Optional;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -38,7 +39,9 @@ public class ApplicationDataJpaTests {
     }
 
     void testFindByEmailHelper(String email){
-        User user = userRepo.findByEmail(email);
+        Optional<User> resultUser = userRepo.findByEmail(email);
+        User user = resultUser.get();
+
         Assertions.assertNotNull(user);
     }
     MyFile testInsertMyFileHelper(String path, User owner) throws IOException {
