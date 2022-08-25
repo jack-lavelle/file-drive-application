@@ -129,7 +129,6 @@ public class AppController {
             ra.addFlashAttribute("message", "File has been successfully uploaded.");
         }
 
-
         return "redirect:/home_page";
     }
     @GetMapping("/login_fail")
