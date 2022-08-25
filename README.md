@@ -67,7 +67,7 @@ All in all this was a Java Spring Boot Maven project that used Thymeleaf, Hibern
 
 **Spring Boot** - I used this (because you told me to) because it makes developing web applications in Java much easier (my first ever framework ... very exciting). 
 
-**Maven** - This was used to manage dependencies ... this sort of works behind the scenes.
+**Maven** - This was used to manage dependencies ... this sort of works behind the scenes. This was also instrumental in deploying the application.
 
 **Thymeleaf** - This was a frontend dependency that I saw reccomendded on a few Spring Boot tutoriel pages. It makes working with data from backend in the frontend easier though the more I worked with it the more I realized it is not exactly essential. 
 
