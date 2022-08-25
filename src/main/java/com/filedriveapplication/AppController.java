@@ -25,9 +25,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+//The main controller for handling all sorts of web requests. Also stores the repositories for files and users.
 @Controller
 public class AppController {
 
+    //A note on Autowired: I have some idea what it does however what exactly a bean is I have no idea.
     @Autowired
     private FileRepository repo;
 
@@ -48,7 +50,8 @@ public class AppController {
 
         return "register";
     }
-    //Home page mapping.
+    //The previous two mappings are fairly self-explanatory. The following one takes GET request at the home_page, looks up the current user in the user repository
+    //and retrieves the files they own and their name, which is then sent to the frontend for viewing.
     @GetMapping("/home_page")
     public String viewHomePage(Model model) throws Exception {
         Optional<User> result = userRepo.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -65,6 +68,13 @@ public class AppController {
     public String viewUploadPage(){
         return "upload";
     }
+
+    //Perhaps the most complicated method in this class. The method takes in the id of the file you want to share and the email
+    //of the user you want to share it with. From here it checks if the file exists, if the user (the owner) is logged in, and if
+    //there is a user associated with the email that exists, and retrieves them if possible.
+
+    //If there was no user with that email then a default user is created with that email with placeholder information.
+    //I also added flash redirect attributes to show succeed messages.
     @PostMapping("/process_share")
     public String shareFile(Long id, String email, RedirectAttributes ra) throws Exception {
         Optional<MyFile> result = repo.findByFileId(id);
@@ -96,6 +106,7 @@ public class AppController {
         return "redirect:/home_page";
     }
 
+    //Registering new users with fail / success messages.
     @PostMapping("/process_register")
     public String processRegister(User user, RedirectAttributes ra){
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -113,6 +124,7 @@ public class AppController {
         return "redirect:/";
     }
 
+    //Retrieves the multipart file from the front end, creating a new file and then saves that to the repo.
     @PostMapping("/upload")
     public String uploadFile(@RequestParam("document") MultipartFile multipartFile, RedirectAttributes ra) throws Exception {
         Optional<User> resultUser = userRepo.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -137,6 +149,7 @@ public class AppController {
         return "redirect:/";
     }
 
+    //Download functionality.
     @GetMapping("/download")
     public void downloadFile(@Param("id") Long id, HttpServletResponse response) throws Exception {
         Optional<MyFile> result = repo.findByFileId(id);
@@ -165,6 +178,9 @@ public class AppController {
         return "redirect:/home_page";
     }
 
+    //The controller for viewing your shared files. The user is retrieved, then a query is made to the joined table that
+    //shows all currently shared files, and if a file is owned by the current user and in that joined table it will
+    //be added to sharedFiles and then sent to the frontend.
     @GetMapping("/shared_files")
     public String viewSharedFiles(Model model) throws Exception {
         Optional<User> resultUser = userRepo.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -183,6 +199,8 @@ public class AppController {
         return "shared_files";
     }
 
+    //Very similar to the previous controller except the logic of query is slightly different to retrieve all files
+    //shared with the current user rather than all files they are sharing.
     @GetMapping("/shared_files_with_me")
     public String viewShareFiles(Model model) throws Exception {
         Optional<User> resultUser = userRepo.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());

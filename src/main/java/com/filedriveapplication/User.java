@@ -6,11 +6,13 @@ import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
+//Very similar to the MyFile class / entity. What is different are the two overloaded shareFile methods. This provides
+//the implementation for how I handled sharing files when there is no user associated with the email. If I had more time
+//I would implement a reset password, and change name feature so that you can override the defaults.
 @Entity
 @Table(name = "users")
 public class User {
 
-    //Each user will have full name and email, and the id is required by JPA.
     @Id
     @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,7 +59,6 @@ public class User {
         return receiver;
     }
 
-    //Constructor for user instances to be saved to the database.
     public User(String name, String email, String password){
         this.password = password;
         this.name = name;

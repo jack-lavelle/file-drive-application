@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+//Repository for files, implementing two methods to find files by id and fileName.
 @Repository
 public interface FileRepository extends JpaRepository <MyFile, Long>{
 

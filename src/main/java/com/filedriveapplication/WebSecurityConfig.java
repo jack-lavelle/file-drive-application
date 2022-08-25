@@ -14,6 +14,8 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import javax.sql.DataSource;
 
+//Spring Security's authentication and authorization configuration. This is what allows me to handle logins, and configure
+//which parts of the website people can access without signing in (they can only access the front_page).
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {

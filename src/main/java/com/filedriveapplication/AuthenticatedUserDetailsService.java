@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.Optional;
-
+//From Spring Security, retrieves the users authentication and authorization information.
 public class AuthenticatedUserDetailsService implements UserDetailsService {
 
     @Autowired

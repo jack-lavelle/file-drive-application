@@ -9,7 +9,11 @@ import java.util.Set;
 @Table(name = "files")
 public class MyFile {
 
-    //Each file has a name, a size, day of upload, its content, and then the Id as required by JPA.
+    //The entity class for files. This is where I specified what a file is, what columns it will have in the database,
+    //and various sets corresponding to different things within the files. This page is similar to the User class as
+    //well. All in all, nothing much going on besides: 1) setting the id for each file so MySQL can function, 2)
+    //setting what the parameters for a file are, 3) mapping the relations between files and users so users can own
+    //files, or files can be shared, or allowing for various queries to be made. The rest is just setters and getters.
     @Id
     @Column(name = "file_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

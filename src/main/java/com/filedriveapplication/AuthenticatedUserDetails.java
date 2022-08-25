@@ -5,6 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
+//From Spring Security, retrieves the users authentication and authorization information.
 public class AuthenticatedUserDetails implements UserDetails {
 
     private User user;
